@@ -10,6 +10,8 @@ class ModelService():
         self.model : LearningSimulator = LearningSimulator(128, 10, 16, 3, 5)
         model_weights = torch.load(path_to_model)
         self.model.load_state_dict(model_weights['model'])
+        self.masses = None
+        self.working_window = None
         self.model.eval()
 
     
@@ -23,7 +25,7 @@ class ModelService():
     def apply_acceleration(self, accelerations : torch.Tensor, positions: torch.Tensor, acc_mean : torch.Tensor, acc_std: torch.Tensor):
         current_pos = positions[:, -1]
         prev_pos = positions[:, -2]
-        accelerations = accelerations * acc_std + acc_mean
+       # accelerations = accelerations * acc_std + acc_mean
         current_velocity = current_pos - prev_pos
         pred_velocity = current_velocity + accelerations
         return current_pos + pred_velocity
@@ -60,7 +62,7 @@ class ModelService():
             prev_velocity = vel_seq[:, -1, :]
             next_velocity = target_pos + pos_noise[:, -1, :] - current_pos
             acceleration = next_velocity - prev_velocity
-            acceleration = (acceleration - acc_mean) / torch.sqrt(acc_std ** 2 + noise_std ** 2) 
+            #acceleration = (acceleration - acc_mean) / torch.sqrt(acc_std ** 2 + noise_std ** 2) 
         else:
             acceleration = None
         
